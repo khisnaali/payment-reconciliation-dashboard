@@ -1,0 +1,11 @@
+Payment_ID,Amount_Received,Premium_Booked,Issue_Type,Status
+PAY001,10000000,10000000,Matched,Closed
+PAY002,15000000,14000000,Payment Difference,Investigation
+PAY003,8000000,0,Unbooked Premium,Pending
+PAY004,12000000,15000000,Underpayment,Follow-up
+PAY005,20000000,20000000,Matched,Closed
+PAY006,7500000,5000000,Payment Difference,Investigation
+PAY007,9000000,0,Unbooked Premium,Pending
+PAY008,11000000,11000000,Matched,Closed
+PAY009,6000000,4000000,Underpayment,Follow-up
+PAY010,18000000,18000000,Matched,Closed
