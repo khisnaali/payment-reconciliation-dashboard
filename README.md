@@ -1,4 +1,4 @@
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/71a3a0da-413c-4d85-9d2a-7f90a4a5f8ea" /># payment-reconciliation-dashboard
+src="https://github.com/user-attachments/assets/71a3a0da-413c-4d85-9d2a-7f90a4a5f8ea" /># payment-reconciliation-dashboard
 # Payment Reconciliation & Discrepancy Management Dashboard
 
 ## Project Overview
