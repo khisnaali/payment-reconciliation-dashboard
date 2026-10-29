@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payment Reconciliation Dashboard</title>
+<style>
+:root{--navy:#14243a;--blue:#2457c5;--bg:#f4f7fb;--text:#182230;--muted:#667085;--line:#e2e8f0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,Segoe UI,sans-serif;color:var(--text);line-height:1.45}
+header{background:var(--navy);color:white;padding:28px max(20px,calc((100% - 1180px)/2))}.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#b9c9e6;font-weight:bold}h1{font-size:clamp(24px,3vw,34px);margin:8px 0}header p{color:#d4deed;margin:0;max-width:760px}
+main{max-width:1180px;margin:24px auto;padding:0 18px 40px}.notice{background:#fff8e8;border:1px solid #f1d79b;border-radius:10px;padding:12px;margin-bottom:18px;font-size:13px;color:#704b00}
+.toolbar,.card,.panel,.table-panel{background:white;border:1px solid var(--line);border-radius:12px}.toolbar{display:flex;gap:12px;align-items:end;flex-wrap:wrap;padding:15px;margin-bottom:16px}label{display:block;font-size:12px;font-weight:bold;color:var(--muted);margin-bottom:5px}select,input{padding:10px;border:1px solid #cfd8e3;border-radius:8px;font:inherit;background:white}input{min-width:190px}button{border:0;border-radius:8px;padding:11px 14px;font-weight:bold;cursor:pointer}.primary{background:var(--blue);color:white}.secondary{background:#eef2f7;color:var(--navy)}.spacer{flex:1}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:16px}.card{padding:16px;min-width:0}.label{font-size:12px;color:var(--muted);font-weight:bold}.metric{font-size:clamp(20px,2.5vw,28px);font-weight:bold;margin:8px 0;overflow-wrap:anywhere}.sub,.intro{font-size:12px;color:var(--muted)}
+.layout{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-bottom:16px}.panel{padding:18px;min-width:0}.panel h2,.table-head h2{font-size:16px;margin:0 0 5px}.intro{margin:0 0 14px}.bar-row{display:grid;grid-template-columns:125px 1fr 25px;gap:9px;align-items:center;margin:14px 0;font-size:12px}.track{height:10px;background:#edf1f6;border-radius:20px;overflow:hidden}.bar{height:100%;background:var(--blue);border-radius:20px}.status-item{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:13px}.pill{display:inline-block;padding:4px 8px;border-radius:20px;font-size:11px;font-weight:bold;background:#eef2f7}.closed{background:#e7f7ef;color:#16845b}.pending{background:#fff2d6;color:#a15c00}.investigation,.follow-up{background:#ffeded;color:#bd3030}
+.table-panel{overflow:hidden}.table-head{padding:18px}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap}th,td{text-align:left;padding:12px 14px;border-top:1px solid var(--line)}th{background:#f8fafc;color:#526071;text-transform:uppercase;font-size:10px;letter-spacing:.05em}td.num{text-align:right;font-variant-numeric:tabular-nums}.empty{text-align:center;padding:24px;color:var(--muted)}footer{text-align:center;color:var(--muted);font-size:12px;margin-top:18px}
+@media(max-width:800px){.cards{grid-template-columns:repeat(2,1fr)}.layout{grid-template-columns:1fr}}@media(max-width:480px){main{padding:0 11px 25px}.toolbar>*{width:100%}.spacer{display:none}.cards{gap:8px}.card{padding:12px}header{padding:22px 15px}}
+</style></head>
+<body>
+<header><div class="eyebrow">Operational Control · Portfolio Project</div><h1>Payment Reconciliation Dashboard</h1><p>Monitor incoming payments against premium booking amounts, identify discrepancies, and track follow-up status using a fictional sample dataset.</p></header>
+<main>
+<div class="notice"><strong>Portfolio demo:</strong> All transactions and amounts are fictional. They are not records from any employer.</div>
+<section class="toolbar">
+<div><label for="issue">Discrepancy type</label><select id="issue"><option value="all">All types</option></select></div>
+<div><label for="status">Resolution status</label><select id="status"><option value="all">All statuses</option></select></div>
+<div><label for="search">Search payment ID</label><input id="search" placeholder="e.g. PAY002"></div><div class="spacer"></div>
+<button class="secondary" id="reset">Reset filters</button><button class="primary" id="export">Export filtered CSV</button>
+</section>
+<section class="cards">
+<article class="card"><div class="label">Total transactions</div><div class="metric" id="total">—</div><div class="sub">In current view</div></article>
+<article class="card"><div class="label">Matched transactions</div><div class="metric" id="matched">—</div><div class="sub" id="rate">—</div></article>
+<article class="card"><div class="label">Need follow-up</div><div class="metric" id="open">—</div><div class="sub">Not marked closed</div></article>
+<article class="card"><div class="label">Absolute discrepancy value</div><div class="metric" id="value">—</div><div class="sub">Sum of absolute differences</div></article>
+</section>
+<section class="layout"><article class="panel"><h2>Discrepancies by type</h2><p class="intro">Transaction count by category in current view.</p><div id="chart"></div></article><article class="panel"><h2>Resolution status</h2><p class="intro">Current follow-up workload.</p><div id="statuses"></div></article></section>
+<section class="table-panel"><div class="table-head"><h2>Transaction details</h2><p class="intro" id="count">Sample transactions</p></div><div class="table-wrap"><table><thead><tr><th>Payment ID</th><th>Amount received</th><th>Premium booked</th><th>Difference</th><th>Issue type</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+<footer>Independent portfolio project · Fictional data · Difference = amount received − premium booked</footer>
+</main>
+<script>
+const data=[
+["PAY001",10000000,10000000,"Matched","Closed"],["PAY002",15000000,14000000,"Payment Difference","Investigation"],
+["PAY003",8000000,0,"Unbooked Premium","Pending"],["PAY004",12000000,15000000,"Underpayment","Follow-up"],
+["PAY005",20000000,20000000,"Matched","Closed"],["PAY006",7500000,5000000,"Payment Difference","Investigation"],
+["PAY007",9000000,0,"Unbooked Premium","Pending"],["PAY008",11000000,11000000,"Matched","Closed"],
+["PAY009",6000000,9000000,"Underpayment","Follow-up"],["PAY010",18000000,18000000,"Matched","Closed"]
+].map(x=>({id:x[0],received:x[1],booked:x[2],diff:x[1]-x[2],type:x[3],status:x[4]}));
+const $=id=>document.getElementById(id), money=n=>"IDR "+new Intl.NumberFormat("en-US",{maximumFractionDigits:0}).format(n);
+[...new Set(data.map(x=>x.type))].forEach(x=>$("issue").add(new Option(x,x)));
+[...new Set(data.map(x=>x.status))].forEach(x=>$("status").add(new Option(x,x)));
+function getRows(){return data.filter(x=>($("issue").value==="all"||x.type===$("issue").value)&&($("status").value==="all"||x.status===$("status").value)&&x.id.toLowerCase().includes($("search").value.trim().toLowerCase()))}
+function render(){let a=getRows(),m=a.filter(x=>x.type==="Matched").length,o=a.filter(x=>x.status!=="Closed").length;
+$("total").textContent=a.length;$("matched").textContent=m;$("rate").textContent=(a.length?Math.round(m/a.length*100):0)+"% of current view";$("open").textContent=o;$("value").textContent=money(a.reduce((s,x)=>s+Math.abs(x.diff),0));
+$("chart").innerHTML=[...new Set(data.map(x=>x.type))].map(t=>{let n=a.filter(x=>x.type===t).length,p=a.length?n/a.length*100:0;return `<div class="bar-row"><span>${t}</span><div class="track"><div class="bar" style="width:${p}%"></div></div><strong>${n}</strong></div>`}).join("");
+$("statuses").innerHTML=[...new Set(data.map(x=>x.status))].map(s=>{let n=a.filter(x=>x.status===s).length;return `<div class="status-item"><span>${s}</span><span><strong>${n}</strong> <span class="pill ${s.toLowerCase().replace(/\s/g,'-')}">${a.length?Math.round(n/a.length*100):0}%</span></span></div>`}).join("");
+$("count").textContent=`Showing ${a.length} of ${data.length} sample transactions`;
+$("rows").innerHTML=a.length?a.map(x=>`<tr><td><strong>${x.id}</strong></td><td class="num">${money(x.received)}</td><td class="num">${money(x.booked)}</td><td class="num">${money(x.diff)}</td><td>${x.type}</td><td><span class="pill ${x.status.toLowerCase().replace(/\s/g,'-')}">${x.status}</span></td></tr>`).join(""):'<tr><td colspan="6" class="empty">No transactions match these filters.</td></tr>'}
+["issue","status"].forEach(id=>$(id).addEventListener("change",render));$("search").addEventListener("input",render);
+$("reset").addEventListener("click",()=>{$("issue").value="all";$("status").value="all";$("search").value="";render()});
+$("export").addEventListener("click",()=>{let a=getRows(),lines=["Payment_ID,Amount_Received,Premium_Booked,Difference,Issue_Type,Status",...a.map(x=>[x.id,x.received,x.booked,x.diff,`"${x.type}"`,`"${x.status}"`].join(","))];let blob=new Blob(["\ufeff"+lines.join("\r\n")],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download="filtered_payment_reconciliation.csv";link.click();URL.revokeObjectURL(url)});
+render();
+</script></body></html>
